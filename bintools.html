@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<script>
+			$("#calc_button").click(function() {
+				$.ajax({
+					url: "calc",
+					method: "POST",
+					data: {
+						"lval": $("textarea[name=lval").val(),
+						"rval": $("textarea[name=rval").val(),
+					},
+					success: function(data) {
+						$("#result").text(data);
+					}
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<textarea type="textarea" name="lval"></textarea>
+		<textarea type="textarea" name="rval"></textarea>
+		<button id="calc_button">
+			<div id="result"></div>
+	</body>
+</html>
