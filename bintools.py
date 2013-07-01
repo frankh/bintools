@@ -9,6 +9,7 @@ log = logging.getLogger()
 import base64
 import string
 
+endian = 'little'
 def to_bytes(hx_or_b64):
 	"""
 	Convert the given string to bytes.
@@ -63,6 +64,8 @@ class Calc(tornado.web.RequestHandler):
 			rbytes = to_bytes(rval)
 
 			out = xor(lbytes, rbytes)
+			self.write(to_hex(out))
+		
 
 
 socket_app = tornado.web.Application([
