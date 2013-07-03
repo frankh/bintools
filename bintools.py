@@ -81,9 +81,9 @@ class Calc(tornado.web.RequestHandler):
 			if op == 'XOR':
 				obytes = xor(lbytes, rbytes)
 			
-			out = to_string(obytes, format)
+			out = to_string(obytes, oformat)
 
-			self.write(to_hex(out))
+			self.write(out)
 		except Exception as e:
 			self.write(str(e))
 		

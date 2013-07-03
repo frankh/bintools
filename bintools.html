@@ -17,8 +17,8 @@
 
 			$(document).ready(function() {
 			$("#calc_button").click(function() {
-				var lformat = $("input[name=lformat]").val();
-				var rformat = $("input[name=rformat]").val();
+				var lformat = $("input[name=lformat]:checked").val();
+				var rformat = $("input[name=rformat]:checked").val();
 				var oformat = "hex";
 
 				var lval = $("textarea[name=lval]").val();
