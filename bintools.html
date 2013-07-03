@@ -3,14 +3,43 @@
 	<head>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 		<script>
+			var detect_type = function(str) {
+				if( str.match(/^[10]+$/) ) {
+					return "bin";
+				} else if (str.match(/^[0-9a-fA-F]+$/)) {
+					return "hex";
+				} else if (str.match(/^[0-9a-zA-Z\-\+_\/=]+$/)) {
+					return "b64";
+				} else {
+					return null;
+				}
+			}
+
 			$(document).ready(function() {
 			$("#calc_button").click(function() {
+				var lformat = $("input[name=lformat]").val();
+				var rformat = $("input[name=rformat]").val();
+				var oformat = "hex";
+
+				var lval = $("textarea[name=lval]").val();
+				var rval = $("textarea[name=rval]").val();
+
+				if( lformat == "auto" ) {
+					lformat = detect_type(lval)
+				}
+				if( rformat == "auto" ) {
+					rformat = detect_type(rval)
+				}
+
 				$.ajax({
 					url: "calc",
 					method: "POST",
 					data: {
 						"lval": $("textarea[name=lval]").val(),
 						"rval": $("textarea[name=rval]").val(),
+						"lformat": lformat,
+						"rformat": rformat,
+						"oformat": oformat,
 						"op": "XOR",
 					},
 					success: function(data) {
@@ -22,9 +51,49 @@
 		</script>
 	</head>
 	<body>
-		<textarea type="textarea" name="lval"></textarea>
-		<textarea type="textarea" name="rval"></textarea>
-		<button id="calc_button">Calc!</button>
-			<div id="result"></div>
+		<table>
+			<tr>
+				<td>
+					<input type="radio" checked name="lformat" id="lauto" value="auto">
+					<label for="lauto">Auto</label>
+					<input type="radio" name="lformat" id="lhex" value="hex">
+					<label for="lhex">Hex</label>
+					<input type="radio" name="lformat" id="lbin" value="bin">
+					<label for="lbin">Binary</label>
+					<input type="radio" name="lformat" id="lb64" value="b64">
+					<label for="lb64">Base 64</label>
+				</td>
+				<td>
+					<input type="radio" checked name="rformat" id="rauto" value="auto">
+					<label for="rauto">Auto</label>
+					<input type="radio" name="rformat" id="rhex" value="hex">
+					<label for="rhex">Hex</label>
+					<input type="radio" name="rformat" id="rbin" value="bin">
+					<label for="rbin">Binary</label>
+					<input type="radio" name="rformat" id="rb64" value="b64">
+					<label for="rb64">Base 64</label>
+				</td>
+				<td>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<textarea type="textarea" name="lval"></textarea>
+				</td>
+				<td>
+					<textarea type="textarea" name="rval"></textarea>
+				</td>
+				<td>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=2>
+				</td>
+				<td>
+					<button id="calc_button">Calc!</button>
+				</td>
+			</tr>
+		</table>
+		<div id="result"></div>
 	</body>
 </html>

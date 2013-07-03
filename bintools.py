@@ -7,21 +7,21 @@ log = logging.getLogger()
 
 
 import base64
+import math
 import string
 
-endian = 'little'
-def to_bytes(hx_or_b64):
-	"""
-	Convert the given string to bytes.
-
-	Assumes it is passed a hex string unless the string is invalid hex,
-	in which case it assumes it's base 64 encoded.
-	"""
-	# If it only contains valid hex characters assume it's hex
-	if set(hx_or_b64) - set(string.digits+'abcdefABCDEF'):
-		return base64.b64decode(hx_or_b64)
+endian = 'big'
+def to_bytes(num_str, format='hex'):
+	if format == 'hex':
+		return bytes.fromhex(num_str)
+	elif format == 'b64':
+		return base64.b64decode(num_str)
+	elif format == 'bin':
+		return int(num_str, 2).to_bytes(math.ceil(len(num_str)/8), endian)
+	elif format == 'ascii':
+		return num_str.encode('ascii')
 	else:
-		return bytes.fromhex(hx_or_b64)
+		raise Exception('Unknown format %s' % format)
 
 def to_hex(b):
 	"""
@@ -53,19 +53,37 @@ def xor(bytes1, bytes2):
 	
 	return xor.to_bytes(length, endian)
 
+def to_string(b, format):
+	if format == 'hex':
+		return to_hex(b)
+	elif format == 'bin':
+		return bin(int.from_bytes(b, endian))
+	elif format == 'b64':
+		return hex_to_b64(to_hex(b))
+	elif format == 'ascii':
+		return b.decode('ascii')
+	else:
+		raise Exception('Unknown format %s' % format)
+
 class Calc(tornado.web.RequestHandler):
 	def post(self):
 		try:
 			lval = self.get_argument('lval')
 			rval = self.get_argument('rval')
 			op = self.get_argument('op')
+			lformat = self.get_argument('lformat')
+			rformat = self.get_argument('rformat')
+			oformat = self.get_argument('oformat')
+
+			lbytes = to_bytes(lval, lformat)
+			rbytes = to_bytes(rval, rformat)
 
 			if op == 'XOR':
-				lbytes = to_bytes(lval)
-				rbytes = to_bytes(rval)
+				obytes = xor(lbytes, rbytes)
+			
+			out = to_string(obytes, format)
 
-				out = xor(lbytes, rbytes)
-				self.write(to_hex(out))
+			self.write(to_hex(out))
 		except Exception as e:
 			self.write(str(e))
 		
