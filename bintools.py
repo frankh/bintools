@@ -55,16 +55,19 @@ def xor(bytes1, bytes2):
 
 class Calc(tornado.web.RequestHandler):
 	def post(self):
-		lval = self.get_argument('lval')
-		rval = self.get_argument('rval')
-		op = self.get_argument('op')
+		try:
+			lval = self.get_argument('lval')
+			rval = self.get_argument('rval')
+			op = self.get_argument('op')
 
-		if op == 'XOR':
-			lbytes = to_bytes(lval)
-			rbytes = to_bytes(rval)
+			if op == 'XOR':
+				lbytes = to_bytes(lval)
+				rbytes = to_bytes(rval)
 
-			out = xor(lbytes, rbytes)
-			self.write(to_hex(out))
+				out = xor(lbytes, rbytes)
+				self.write(to_hex(out))
+		except Exception as e:
+			self.write(str(e))
 		
 
 
